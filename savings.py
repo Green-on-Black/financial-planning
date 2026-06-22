@@ -1,14 +1,21 @@
+# Present value of the investment
+# In the future, I want to change this to be a variable passed from 
+# the user during runtime
 pv = 100000
 
-# Tax Bracket Inputs for an NYC Resident
+# Taxes. What everybody loves /s
 fed_bracket =   0.24
-niit_surtax =   0.038
 ny_state_tax =  0.0685
 nyc_local_tax = 0.0388
+# Net Investment Income Tax (NIIT) is an additional tax of 3.8% that 
+# applies to high earners making over $200K for single filers or 
+# $250K for married couples filing jointly).
+# Zero this out if this doesn't apply to you.
+niit_surtax =   0.038
 
-# Combined Math Variables for the Logic Engine
-f_tax = fed_bracket + niit_surtax + ny_state_tax + nyc_local_tax    # 0.3853
-m_tax = ny_state_tax + nyc_local_tax                                # 0.1073
+# Crunch zee numbers <_<
+f_tax = fed_bracket + ny_state_tax + nyc_local_tax + niit_surtax
+m_tax = ny_state_tax + nyc_local_tax
 
 fzdxx_pre = pv * 0.0347
 fzdxx_post = fzdxx_pre * (1 - f_tax)
@@ -22,7 +29,7 @@ fzexx_post = fzexx_pre * (1 - m_tax)
 fsnxx_pre = pv * 0.0254
 fsnxx_post = fsnxx_pre
 
-tbill_pre = pv * 0.0364                                            # 8-wk yield
+tbill_pre = pv * 0.0364                                  # 8-wk yield
 tbill_post = tbill_pre * (1 - fed_bracket)
 
 print(f"FZDXX: Pre-tax={fzdxx_pre:.2f}, Post-tax={fzdxx_post:.2f}")
