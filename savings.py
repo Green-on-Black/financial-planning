@@ -36,13 +36,14 @@ fzcxx_post = fzcxx_pre * (1 - f_tax)
 fzexx_pre = pv * 0.0254
 fzexx_post = fzexx_pre * (1 - m_tax)
 
-fsnxx_pre = pv * 0.0254
+fsnxx_yield = 0.0254
+fsnxx_pre = pv * fsnxx_yield
 fsnxx_post = fsnxx_pre
 
 tbill_pre = pv * 0.0364                                  # 8-wk yield
 tbill_post = tbill_pre * (1 - fed_bracket)
 
-print(f"\nFZDXX: Pre-tax={fzdxx_pre:.2f}, Post-tax={fzdxx_post:.2f}")
+print(f"\nFZDXX:  Pre-tax={fzdxx_pre:.2f}, Post-tax={fzdxx_post:.2f}")
 print(f"FZCXX:  Pre-tax={fzcxx_pre:.2f}, Post-tax={fzcxx_post:.2f}")
 print(f"FZEXX:  Pre-tax={fzexx_pre:.2f}, Post-tax={fzexx_post:.2f}")
 print(f"FSNXX:  Pre-tax={fsnxx_pre:.2f}, Post-tax={fsnxx_post:.2f}")
@@ -67,11 +68,11 @@ def calculate_switching_funds(muni_yield, fed, niit, state, local):
     print(f"To beat a NYS/NYC Municipal money market, a Fully Taxable fund must yield MORE than: ........... {taxable_threshold*100:.2f}%")
     print(f"To beat a National/out-of-state municipal fund, a NYS/NYC Taxable fund must yield MORE than: ... {national_muni_threshold*100:.2f}%")
 
-# Test with your client's current setup
+# Crunch zee numbers! again! ^_^
 calculate_switching_funds(
-    muni_yield=0.0254,  # FSNXX at 2.54%
-    fed=0.24,           # 24% Federal Bracket
-    niit=0.038,         # 3.8% NIIT Surtax
-    state=0.0685,       # 6.85% NY State Tax
-    local=0.0388        # 3.88% NYC Local Tax
+    muni_yield  =   fsnxx_yield,
+    fed         =   fed_bracket,
+    niit        =   niit_surtax,
+    state       =   ny_state_tax,
+    local       =   nyc_local_tax
 )
