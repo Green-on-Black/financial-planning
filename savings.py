@@ -49,7 +49,7 @@ nyf_post = nyf_pre
 fmny_pre = pv * 0.0352
 fmny_post = fmny_pre
 
-print(f"SYMBOL    FUND NAME               PRE-TAX        POST-TAX")
+print(f"SYMBOL    FUND CATEGORY           PRE-TAX        POST-TAX")
 print(f"======================================================================")
 print(f"FMNY      Muni New York Long      $ {fmny_pre:,.2f}     $ {fmny_post:,.2f}")
 print(f"NYF       Muni New York Long      $ {nyf_pre:,.2f}     $ {nyf_post:,.2f}")
