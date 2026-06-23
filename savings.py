@@ -43,11 +43,21 @@ fsnxx_post = fsnxx_pre
 tbill_pre = pv * 0.0364                                  # 8-wk yield
 tbill_post = tbill_pre * (1 - fed_bracket)
 
-print(f"\nFZDXX:  Pre-tax={fzdxx_pre:.2f}, Post-tax={fzdxx_post:.2f}")
-print(f"FZCXX:  Pre-tax={fzcxx_pre:.2f}, Post-tax={fzcxx_post:.2f}")
-print(f"FZEXX:  Pre-tax={fzexx_pre:.2f}, Post-tax={fzexx_post:.2f}")
-print(f"FSNXX:  Pre-tax={fsnxx_pre:.2f}, Post-tax={fsnxx_post:.2f}")
-print(f"T-Bill: Pre-tax={tbill_pre:.2f}, Post-tax={tbill_post:.2f}")
+nyf_pre = pv * 0.0336
+nyf_post = nyf_pre
+
+fmny_pre = pv * 0.0352
+fmny_post = fmny_pre
+
+print(f"SYMBOL    FUND NAME               PRE-TAX        POST-TAX")
+print(f"======================================================================")
+print(f"FMNY      Muni New York Long      $ {fmny_pre:,.2f}     $ {fmny_post:,.2f}")
+print(f"NYF       Muni New York Long      $ {nyf_pre:,.2f}     $ {nyf_post:,.2f}")
+print(f"T-Bill    Treasury Bills          $ {tbill_pre:,.2f}     $ {tbill_post:,.2f}")
+print(f"FSNXX     Money Market-Tax-Free   $ {fsnxx_pre:,.2f}     $ {fsnxx_post:,.2f}")
+print(f"FZEXX     Money Market-Taxable    $ {fzexx_pre:,.2f}     $ {fzexx_post:,.2f}")
+print(f"FZDXX     Prime Money Market      $ {fzdxx_pre:,.2f}     $ {fzdxx_post:,.2f}")
+print(f"FZCXX     Money Market-Taxable    $ {fzcxx_pre:,.2f}     $ {fzcxx_post:,.2f}")
 
 # This is how we can determine when it makes sense to switch from a 
 # triple tax-exempt municipal money market to one that is taxable.
