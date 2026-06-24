@@ -1,3 +1,5 @@
+import yfinance as yf
+
 # Present value of the investment
 # In the future, I want to change this to be a variable passed from 
 # the user during runtime
@@ -13,9 +15,38 @@ nyc_local_tax = 0.0388
 # Zero this out if this doesn't apply to you.
 niit_surtax =   0.038
 
-# Crunch zee numbers <_<
+# Calculate the tax burden. Boo hoo, no fun!
 f_tax = fed_bracket + ny_state_tax + nyc_local_tax + niit_surtax
 m_tax = ny_state_tax + nyc_local_tax
+
+# Get the yields for ETFs from Yahoo! Finance (via yfinance)
+def get_etf_yield(ticker_symbol):
+    """
+    Gets the yields for ETFs using yfinance.
+    Returns the yield as a decimal (e.g., 0.0336 for 3.36%).
+    """
+    try:
+        ticker = yf.Ticker(ticker_symbol)
+        info = ticker.info
+        
+        # Yahoo is annoying and sometimes stores ETF yields in 
+        # 'yield' or 'dividendYield'. To figure this out, check both 
+        # keys and return the first one that exists.
+        fund_yield = info.get('yield') or info.get('dividendYield')
+        
+        if fund_yield is not None:
+            return fund_yield
+        else:
+            print(f"Could not find the yield for {ticker_symbol}. Defaulting to 0.")
+            return 0.0
+            
+    except Exception as e:
+        print(f"Error fetching data for {ticker_symbol}: {e}")
+        return 0.0
+
+# Fetch yields dynamically!
+nyf_yield_live = get_etf_yield("NYF")
+fmny_yield_live = get_etf_yield("FMNY")
 
 # This is where the magic happens!
 # For each fund, calculate the pre-tax return based on the present 
@@ -43,21 +74,21 @@ fsnxx_post = fsnxx_pre
 tbill_pre = pv * 0.0364                                  # 8-wk yield
 tbill_post = tbill_pre * (1 - fed_bracket)
 
-nyf_pre = pv * 0.0336
+nyf_pre = pv * nyf_yield_live
 nyf_post = nyf_pre
 
-fmny_pre = pv * 0.0352
+fmny_pre = pv * fmny_yield_live
 fmny_post = fmny_pre
 
-print(f"SYMBOL    FUND CATEGORY           PRE-TAX        POST-TAX")
-print(f"======================================================================")
-print(f"FMNY      Muni New York Long      $ {fmny_pre:,.2f}     $ {fmny_post:,.2f}")
-print(f"NYF       Muni New York Long      $ {nyf_pre:,.2f}     $ {nyf_post:,.2f}")
-print(f"T-Bill    Treasury Bills          $ {tbill_pre:,.2f}     $ {tbill_post:,.2f}")
-print(f"FSNXX     Money Market-Tax-Free   $ {fsnxx_pre:,.2f}     $ {fsnxx_post:,.2f}")
-print(f"FZEXX     Money Market-Taxable    $ {fzexx_pre:,.2f}     $ {fzexx_post:,.2f}")
-print(f"FZDXX     Prime Money Market      $ {fzdxx_pre:,.2f}     $ {fzdxx_post:,.2f}")
-print(f"FZCXX     Money Market-Taxable    $ {fzcxx_pre:,.2f}     $ {fzcxx_post:,.2f}")
+print(f"SYMBOL    FUND CATEGORY           30-DAY YIELD   PRE-TAX        POST-TAX")
+print(f"==========================================================================")
+print(f"FMNY      Muni New York Long ETF  {fmny_yield_live*100:.2f} %         $ {fmny_pre:,.2f}     $ {fmny_post:,.2f}")
+print(f"NYF       Muni New York Long ETF  {nyf_yield_live*100:.2f} %         $ {nyf_pre:,.2f}     $ {nyf_post:,.2f}")
+print(f"T-Bill    Treasury Bills                         $ {tbill_pre:,.2f}     $ {tbill_post:,.2f}")
+print(f"FSNXX     Money Market-Tax-Free                  $ {fsnxx_pre:,.2f}     $ {fsnxx_post:,.2f}")
+print(f"FZEXX     Money Market-Taxable                   $ {fzexx_pre:,.2f}     $ {fzexx_post:,.2f}")
+print(f"FZDXX     Prime Money Market                     $ {fzdxx_pre:,.2f}     $ {fzdxx_post:,.2f}")
+print(f"FZCXX     Money Market-Taxable                   $ {fzcxx_pre:,.2f}     $ {fzcxx_post:,.2f}")
 
 # This is how we can determine when it makes sense to switch from a 
 # triple tax-exempt municipal money market to one that is taxable.
