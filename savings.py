@@ -16,7 +16,7 @@ nyc_local_tax = 0.0388
 niit_surtax =   0.038
 
 # Calculate the tax burden. Boo hoo, no fun!
-f_tax = fed_bracket + ny_state_tax + nyc_local_tax + niit_surtax
+f_tax = fed_bracket + niit_surtax
 m_tax = ny_state_tax + nyc_local_tax
 
 # Get the yields for ETFs from Yahoo! Finance (via yfinance)
@@ -58,21 +58,27 @@ fmny_yield_live = get_etf_yield("FMNY")
 # post-tax return is equal to its pre-tax return.
 # Like the present value, I'll one day get around to making this a 
 # variable passed during runtime
-fzdxx_pre = pv * 0.0347
-fzdxx_post = fzdxx_pre * (1 - f_tax)
+fzdxx_pre = pv * 0.0348
+fzdxx_post = fzdxx_pre * (1 - (f_tax + m_tax))
 
-fzcxx_pre = pv * 0.0339
-fzcxx_post = fzcxx_pre * (1 - f_tax)
+fzcxx_pre = pv * 0.0342
+fzcxx_post = fzcxx_pre * (1 - (f_tax + m_tax))
 
-fzexx_pre = pv * 0.0254
+fdlxx_pre = pv * 0.0336
+fdlxx_post = fdlxx_pre * (1 - f_tax)
+
+fzexx_pre = pv * 0.0225
 fzexx_post = fzexx_pre * (1 - m_tax)
 
-fsnxx_yield = 0.0254
+spaxx_pre = pv * 0.0225
+spaxx_post = spaxx_pre * (1 - m_tax)
+
+fsnxx_yield = 0.0224
 fsnxx_pre = pv * fsnxx_yield
 fsnxx_post = fsnxx_pre
 
-tbill_pre = pv * 0.0364                                  # 8-wk yield
-tbill_post = tbill_pre * (1 - fed_bracket)
+tbill_pre = pv * 0.0371                                  # 4-wk yield
+tbill_post = tbill_pre * (1 - f_tax)
 
 nyf_pre = pv * nyf_yield_live
 nyf_post = nyf_pre
@@ -85,10 +91,12 @@ print(f"========================================================================
 print(f"FMNY      Muni New York Long ETF  {fmny_yield_live*100:.2f} %         $ {fmny_pre:,.2f}     $ {fmny_post:,.2f}")
 print(f"NYF       Muni New York Long ETF  {nyf_yield_live*100:.2f} %         $ {nyf_pre:,.2f}     $ {nyf_post:,.2f}")
 print(f"T-Bill    Treasury Bills                         $ {tbill_pre:,.2f}     $ {tbill_post:,.2f}")
+print(f"FDLXX     Money Market-Taxable                   $ {fdlxx_pre:,.2f}     $ {fdlxx_post:,.2f}")
 print(f"FSNXX     Money Market-Tax-Free                  $ {fsnxx_pre:,.2f}     $ {fsnxx_post:,.2f}")
-print(f"FZEXX     Money Market-Taxable                   $ {fzexx_pre:,.2f}     $ {fzexx_post:,.2f}")
 print(f"FZDXX     Prime Money Market                     $ {fzdxx_pre:,.2f}     $ {fzdxx_post:,.2f}")
 print(f"FZCXX     Money Market-Taxable                   $ {fzcxx_pre:,.2f}     $ {fzcxx_post:,.2f}")
+print(f"FZEXX     Money Market-Taxable                   $ {fzexx_pre:,.2f}     $ {fzexx_post:,.2f}")
+print(f"SPAXX     Money Market-Taxable                   $ {spaxx_pre:,.2f}     $ {spaxx_post:,.2f}")
 
 # This is how we can determine when it makes sense to switch from a 
 # triple tax-exempt municipal money market to one that is taxable.
@@ -99,15 +107,18 @@ def calculate_switching_funds(muni_yield, fed, niit, state, local):
     """
     f_tax = fed + niit + state + local
     m_tax = state + local
+    fed_tax = fed + niit
     
     # Calculate the breakeven points
     taxable_threshold = muni_yield / (1 - f_tax)
     national_muni_threshold = muni_yield / (1 - m_tax)
+    treasury_threshold = muni_yield / (1 - fed_tax)
     
     print(f"\n------------ WHEN TO SWITCH ------------")
-    print(f"CURRENT TARGET ................................................................................. {muni_yield*100:.2f}% Post-tax")
+    print(f"CURRENT BENCHMARK .............................................................................. {muni_yield*100:.2f}% Post-tax")
     print(f"To beat a NYS/NYC Municipal money market, a Fully Taxable fund must yield MORE than: ........... {taxable_threshold*100:.2f}%")
-    print(f"To beat a National/out-of-state municipal fund, a NYS/NYC Taxable fund must yield MORE than: ... {national_muni_threshold*100:.2f}%")
+    print(f"To beat a NYS/NYC Municipal money market, a Treasury Bill fund must yield MORE than: ........... {treasury_threshold*100:.2f}%")
+    print(f"To beat a NYS/NYC Municipal money market, an Out-of-State Muni must yield MORE than: ........... {national_muni_threshold*100:.2f}%")
 
 # Crunch zee numbers! again! ^_^
 calculate_switching_funds(
