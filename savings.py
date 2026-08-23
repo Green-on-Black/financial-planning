@@ -47,6 +47,8 @@ def get_etf_yield(ticker_symbol):
 # Fetch yields dynamically!
 nyf_yield_live = get_etf_yield("NYF")
 fmny_yield_live = get_etf_yield("FMNY")
+sgov_yield_live = get_etf_yield("SGOV")
+usfr_yield_live = get_etf_yield("USFR")
 
 # This is where the magic happens!
 # For each fund, calculate the pre-tax return based on the present 
@@ -86,10 +88,18 @@ nyf_post = nyf_pre
 fmny_pre = pv * fmny_yield_live
 fmny_post = fmny_pre
 
+sgov_pre = pv * sgov_yield_live
+sgov_post = sgov_pre * (1 - f_tax)
+
+usfr_pre = pv * usfr_yield_live
+usfr_post = usfr_pre * (1 - f_tax)
+
 print(f"SYMBOL    FUND CATEGORY           30-DAY YIELD   PRE-TAX        POST-TAX")
 print(f"==========================================================================")
 print(f"FMNY      Muni New York Long ETF  {fmny_yield_live*100:.2f} %         $ {fmny_pre:,.2f}     $ {fmny_post:,.2f}")
 print(f"NYF       Muni New York Long ETF  {nyf_yield_live*100:.2f} %         $ {nyf_pre:,.2f}     $ {nyf_post:,.2f}")
+print(f"SGOV      Treasury Bills          {sgov_yield_live*100:.2f} %         $ {sgov_pre:,.2f}     $ {sgov_post:,.2f}")
+print(f"USFR      Treasury Bills          {usfr_yield_live*100:.2f} %         $ {usfr_pre:,.2f}     $ {usfr_post:,.2f}")
 print(f"T-Bill    Treasury Bills                         $ {tbill_pre:,.2f}     $ {tbill_post:,.2f}")
 print(f"FDLXX     Money Market-Taxable                   $ {fdlxx_pre:,.2f}     $ {fdlxx_post:,.2f}")
 print(f"FSNXX     Money Market-Tax-Free                  $ {fsnxx_pre:,.2f}     $ {fsnxx_post:,.2f}")
